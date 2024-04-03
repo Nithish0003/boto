@@ -1,0 +1,6 @@
+{
+  "cSpell.words": ["boto", "mumkey", "vali"],
+  "python.testing.pytestArgs": ["ec2"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
+}
