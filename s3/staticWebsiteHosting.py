@@ -1,4 +1,4 @@
-import boto3,base64
+import boto3,requests
 
 client=boto3.client('s3')
 buck=input("Enter the name of the bucket: ")
@@ -15,19 +15,27 @@ def createBucket(buck):
     except Exception as e:
         print(e)
 
-with open("D:/vscode/boto/s3/pic/Cafe-Owners.png", "rb") as image2string: 
-    converted_string = base64.b64encode(image2string.read()) 
+# with open("D:/vscode/boto/s3/pic/Cafe-Owners.png", "rb") as image2string: 
+#     converted_string = base64.b64encode(image2string.read()) 
 
 # upload objects
 # Use base64 to convert html file/img ---> string
+url=input("Enter the url you want to host: ")
 def uploadFiles(buck):
     try:
+        hostName=input("Enter the host name: ")
         response=client.put_object(
             ACL='public-read',
             Bucket=f'{buck}',
-            Body=converted_string,
-            Key='file.png',
-            ContentType='png'
+            Body=f'''
+<html>
+    <body>
+        <a href="{url}">{hostName}</a>
+    </body>
+</html>        
+''',
+            Key='index.html',
+            ContentType='html'
         )
         print("Object uploaded successfully...")
     except Exception as e:
@@ -67,11 +75,11 @@ def staticHost(buck):
         response=client.put_bucket_website(
             Bucket=f"{buck}",
             WebsiteConfiguration={
-                'ErrorDocument':{
-                    'Key':'error.html'
-                },
                 'IndexDocument':{
                     'Suffix':'index.html'
+                },
+                'ErrorDocument':{
+                    'Key':'error.html'
                 }
             }
         )
@@ -113,12 +121,19 @@ def emptyBucket(buck,key):
         }
     )
 
+def scrap():
+    response=requests.get(url)
+    data=response.text
+    with open('index.html','w',encoding='utf-8') as file:
+        file.write(data)
+
 # static website hosting
 def staticWebHost(buck):
     publicAccessBlock(buck)
     acl(buck)
-    staticHost(buck)
     uploadFiles(buck)
+    scrap()
+    staticHost(buck)
 
 # obj=listObject(buck)
 # sizeO=0
@@ -128,6 +143,7 @@ def staticWebHost(buck):
 #     print(obj['Contents'][i]['Key'])
 
 list=listBuckets()
+# print(list)
 # print(list['Buckets'][0]['Name'])
 size=0
 flag=0
@@ -137,16 +153,11 @@ for i in list['Buckets']:
 for i in range(0,size):
     if buck==list['Buckets'][i]['Name']:
         flag=1
-        # deleteBucket(buck)
-        # print("deleting...")
-    # else:
-        # flag=1
-        # createBucket(buck)
-        # print("creating...")
 print(flag)
 if flag==1:
     obj=listObject(buck)
     sizeO=0
+    # print(obj)
     for i in obj['Contents']:
         sizeO+=1
     for i in range(0,sizeO):
@@ -155,9 +166,9 @@ if flag==1:
     print("Emptying Bucket...")
     print("deleting bucket....")
     deleteBucket(buck)
-    # print("creating bucket....")
-    # createBucket(buck)
-    # staticWebHost(buck)
+    print("creating bucket....")
+    createBucket(buck)
+    staticWebHost(buck)
 else:
     print("creating bucket....")
     createBucket(buck)
