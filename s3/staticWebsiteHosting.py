@@ -1,7 +1,9 @@
+from io import BytesIO
 import boto3,requests
 
 client=boto3.client('s3')
 buck=input("Enter the name of the bucket: ")
+url=input("Enter the url you want to host: ")
 
 # create bucket
 def createBucket(buck):
@@ -18,28 +20,48 @@ def createBucket(buck):
 # with open("D:/vscode/boto/s3/pic/Cafe-Owners.png", "rb") as image2string: 
 #     converted_string = base64.b64encode(image2string.read()) 
 
+# getting content
+def conte():
+    response=requests.get(url)
+    return response.content
+
+
 # upload objects
 # Use base64 to convert html file/img ---> string
-url=input("Enter the url you want to host: ")
 def uploadFiles(buck):
     try:
-        hostName=input("Enter the host name: ")
+        # hostName=input("Enter the host name: ")
+        content=conte()
         response=client.put_object(
             ACL='public-read',
             Bucket=f'{buck}',
-            Body=f'''
-<html>
-    <body>
-        <a href="{url}">{hostName}</a>
-    </body>
-</html>        
-''',
+            Body=BytesIO(content),
             Key='index.html',
             ContentType='html'
         )
         print("Object uploaded successfully...")
     except Exception as e:
         print(e)
+    #     f'''
+    # <!DOCTYPE html>
+    # <html>
+    #     <head>
+    #     <meta http-equiv="refresh" content="0; url={url}" />
+    #     </head>
+    # </html>        
+    # '''
+    # <a href="{url}">{hostName}</a>
+    #     <body>
+    # <br><br><br>
+    # <h1>Just a moment...</h1>
+    # <div class="slider">
+	# <div class="line"></div>
+	# <div class="break dot1"></div>
+	# <div class="break dot2"></div>
+	# <div class="break dot3"></div>
+    # </div>
+    # <p>We're redirecting you to our new site... Not working? <a href="{url}">Click here.</a></p>
+    # </body>
 
 # make public acl
 def acl(buck):
