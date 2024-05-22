@@ -42,27 +42,6 @@ def uploadFiles(buck):
         print("Object uploaded successfully...")
     except Exception as e:
         print(e)
-    #     f'''
-    # <!DOCTYPE html>
-    # <html>
-    #     <head>
-    #     <meta http-equiv="refresh" content="0; url={url}" />
-    #     </head>
-    # </html>        
-    # '''
-    # <a href="{url}">{hostName}</a>
-    #     <body>
-    # <br><br><br>
-    # <h1>Just a moment...</h1>
-    # <div class="slider">
-	# <div class="line"></div>
-	# <div class="break dot1"></div>
-	# <div class="break dot2"></div>
-	# <div class="break dot3"></div>
-    # </div>
-    # <p>We're redirecting you to our new site... Not working? <a href="{url}">Click here.</a></p>
-    # </body>
-
 # make public acl
 def acl(buck):
     try:
@@ -153,8 +132,9 @@ def scrap():
 def staticWebHost(buck):
     publicAccessBlock(buck)
     acl(buck)
+    conte()
     uploadFiles(buck)
-    scrap()
+    # scrap()
     staticHost(buck)
 
 # obj=listObject(buck)
@@ -195,3 +175,4 @@ else:
     print("creating bucket....")
     createBucket(buck)
     staticWebHost(buck)
+print(f"Go to this link to vist your website ==> http://{buck}.s3-website.ap-south-1.amazonaws.com ")
